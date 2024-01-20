@@ -4,11 +4,12 @@ import { UpdateEstablishmentDto } from './dto/update-establishment.dto';
 import { Establishment } from './entities/establishment.entity';
 import { Repository, EntityNotFoundError } from 'typeorm';
 import { ResultsDto } from 'src/dto/results.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class EstablishmentService {
   constructor(
-    @Inject('ESTABLISHMENT_REPOSITORY')
+    @InjectRepository(Establishment)
     private establishmentRepository: Repository<Establishment>,
   ) { }
 
