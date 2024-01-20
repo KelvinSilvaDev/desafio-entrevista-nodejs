@@ -15,6 +15,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Users')
     .addTag('Establishment')
+    .addTag('Vehicles')
     .build();
   const globalPrefix = 'api/v1';
   app.setGlobalPrefix(globalPrefix);
