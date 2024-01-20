@@ -11,4 +11,4 @@ export const TypeORMConfig: any = {
   migrationsTableName: 'migrations_TypeORM',
   synchronize: false,
   logging: true,
-};
+}

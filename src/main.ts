@@ -12,8 +12,9 @@ async function bootstrap() {
     .setDescription('Api RESTful para controle de estacionamento')
     .setVersion('1.0')
     .addTag('Users')
+    .addTag('Establishment')
     .build();
-  const globalPrefix = 'api';
+  const globalPrefix = 'api/v1';
   app.setGlobalPrefix(globalPrefix);
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(OPEN_API_ROOT, app, document);

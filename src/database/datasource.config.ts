@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource } from 'typeorm'
 
 export const dataSource: any = new DataSource({
   type: 'mysql',
@@ -11,4 +11,4 @@ export const dataSource: any = new DataSource({
   entities: ['dist/**/ *.entity{ .ts,.js }'],
   migrations: ['dist / src / migration/*{.ts,.js}'],
   migrationsTableName: 'migrations_TypeORM',
-});
+})
