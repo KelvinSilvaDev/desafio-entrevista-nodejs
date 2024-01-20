@@ -29,7 +29,7 @@ export class EstablishmentController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.establishmentService.findOne(+id);
+    return this.establishmentService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class EstablishmentController {
     @Param('id') id: string,
     @Body() updateEstablishmentDto: UpdateEstablishmentDto,
   ) {
-    return this.establishmentService.update(+id, updateEstablishmentDto);
+    return this.establishmentService.update(id, updateEstablishmentDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.establishmentService.remove(+id);
+    return this.establishmentService.remove(id);
   }
 }

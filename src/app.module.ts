@@ -1,11 +1,22 @@
-import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { UsersModule } from './users/users.module'
-import { EstablishmentModule } from './establishment/establishment.module'
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
+import { EstablishmentModule } from './establishment/establishment.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnectionOptions } from 'typeorm';
 
 @Module({
-  imports: [UsersModule, EstablishmentModule],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      useFactory: async () =>
+        Object.assign(await getConnectionOptions(), {
+          autoLoadEntities: true,
+        }),
+    }),
+    UsersModule,
+    EstablishmentModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

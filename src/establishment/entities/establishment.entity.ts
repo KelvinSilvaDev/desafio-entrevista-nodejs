@@ -1,19 +1,31 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Establishment {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @Column({ length: 500 })
+    @Column()
     name: string;
 
-    @Column({ length: 14 })
-    cnpj: bigint;
+    @Column()
+    cnpj: string;
 
-    @Column({ length: 500 })
+    @Column()
     address: string;
 
-    @Column({ length: 500 })
-    phone: bigint;
+    @Column()
+    phone: string;
+
+    @Column()
+    motorcycleSpaces: number;
+
+    @Column()
+    carSpaces: number;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }
