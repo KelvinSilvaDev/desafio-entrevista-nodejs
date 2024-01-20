@@ -12,33 +12,10 @@ export const databaseProviders = [
         password: 'password',
         database: 'nest',
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: false,
+        synchronize: true,
       })
 
       return dataSource.initialize()
     },
   },
 ]
-
-
-// import { DataSource } from 'typeorm'
-
-// export const databaseProviders = [
-//   {
-//     provide: 'DATA_SOURCE',
-//     useFactory: async () => {
-//       const dataSource = new DataSource({
-//         type: 'mysql',
-//         host: 'localhost',
-//         port: 3306,
-//         username: 'root',
-//         password: 'password',
-//         database: 'nest',
-//         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-//         synchronize: false,
-//       })
-
-//       return dataSource.initialize()
-//     },
-//   },
-// ]

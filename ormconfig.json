@@ -4,8 +4,8 @@
   "port": 3306,
   "username": "root",
   "password": "password",
-  "database": "testone",
-  "migrations": ["dist/migrations/*.js", "src/database/migrations/*.js"],
+  "database": "nest",
+  "migrations": ["dist/migrations/*.js"],
   "autoLoadEntities": true,
-  "synchronize": false
+  "synchronize": true
 }
