@@ -6,6 +6,7 @@ import { EstablishmentModule } from './establishment/establishment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from 'typeorm';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { ParkingRecordModule } from './parking-record/parking-record.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     UsersModule,
     EstablishmentModule,
     VehiclesModule,
+    ParkingRecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
