@@ -2,30 +2,64 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 
 @Entity()
 export class Establishment {
+    /**
+     * Identificador único do estabelecimento
+     * @example 1
+     */
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    /**
+     * Nome do estabelecimento
+     * @example "Restaurante XYZ"
+     */
+    @Column({ length: 500 })
     name: string;
 
-    @Column()
+    /**
+     * CNPJ do estabelecimento
+     * @example "12.345.678/0001-90"
+     */
+    @Column({ length: 20 })
     cnpj: string;
 
-    @Column()
+    /**
+     * Endereço do estabelecimento
+     * @example "Rua ABC, 123"
+     */
+    @Column({ length: 500 })
     address: string;
 
-    @Column()
+    /**
+     * Número de telefone do estabelecimento
+     * @example "(11) 1234-5678"
+     */
+    @Column({ length: 20 })
     phone: string;
 
-    @Column()
+    /**
+     * Número de vagas para motocicletas
+     * @example 10
+     */
+    @Column({ type: 'int' })
     motorcycleSpaces: number;
 
-    @Column()
+    /**
+     * Número de vagas para carros
+     * @example 20
+     */
+    @Column({ type: 'int' })
     carSpaces: number;
 
+    /**
+     * Data de criação do registro
+     */
     @CreateDateColumn()
     createdAt: Date;
 
+    /**
+     * Data da última atualização do registro
+     */
     @UpdateDateColumn()
     updatedAt: Date;
 }
