@@ -2,8 +2,12 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Establishment } from "src/establishment/entities/establishment.entity";
 import { Vehicle } from "src/vehicles/entities/vehicle.entity";
-import { Repository, Connection } from "typeorm";
+
 import { ParkingRecord } from "./entities/parking-record.entity";
+import { Repository, Connection, getConnection, getRepository, getConnectionManager, IsNull, Not } from "typeorm";
+import { UpdateEstablishmentDto } from "src/establishment/dto/update-establishment.dto";
+import { ResultsDto } from "src/dto/results.dto";
+
 
 @Injectable()
 export class ParkingRecordService {
@@ -28,6 +32,27 @@ export class ParkingRecordService {
     return parkingRecords;
   }
 
+
+  async incrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
+
+    if (vehicle.type === 'Car') {
+      establishment.occupiedCarSpaces++;
+    } else {
+      establishment.occupiedMotorcycleSpaces++;
+    }
+    return await this.establishmentRepository.save(establishment);
+  }
+
+  async decrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
+    if (vehicle.type === 'Car') {
+      establishment.occupiedCarSpaces--;
+    } else {
+      establishment.occupiedMotorcycleSpaces--;
+    }
+    return await this.establishmentRepository.save(establishment);
+  }
+
+
   async create(vehicle: Vehicle, establishment: Establishment) {
     const foundVehicle = await this.vehicleRepository.findOne({ where: { id: vehicle.id } });
     const foundEstablishment = await this.establishmentRepository.findOne({ where: { id: establishment.id } });
@@ -36,63 +61,95 @@ export class ParkingRecordService {
       throw new NotFoundException('Vehicle or establishment not found');
     }
 
-    if (vehicle.type === 'Car' && establishment.carSpaces <= establishment.occupiedCarSpaces) {
+    if (foundVehicle.type === 'Car' && foundEstablishment.carSpaces <= foundEstablishment.occupiedCarSpaces) {
       throw new BadRequestException('No available car spaces in the establishment');
+    } else if (foundVehicle.type === 'Motorcycle' && foundEstablishment.motorcycleSpaces <= foundEstablishment.occupiedMotorcycleSpaces) {
+      throw new BadRequestException('No available motorcycle spaces in the establishment');
+    } else {
+      await this.incrementOccupiedSpaces(foundEstablishment, foundVehicle);
     }
 
-    if (vehicle.type === 'Motorcycle' && establishment.motorcycleSpaces <= establishment.occupiedMotorcycleSpaces) {
-      throw new BadRequestException('No available motorcycle spaces in the establishment');
-    }
+
+
 
     const parkingRecord = new ParkingRecord();
     parkingRecord.vehicle = vehicle;
     parkingRecord.establishment = establishment;
     parkingRecord.entryTime = new Date();
 
-    if (vehicle.type === 'Car') {
-      establishment.occupiedCarSpaces += 1;
-    } else if (vehicle.type === 'Motorcycle') {
-      establishment.occupiedMotorcycleSpaces += 1;
-    }
 
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await queryRunner.manager.save(parkingRecord);
-      await queryRunner.manager.save(establishment);
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException('Failed to create parking record');
-    } finally {
-      await queryRunner.release();
-    }
-
-    return parkingRecord;
-  }
-
-  async update(id: any) {
-    const parkingRecord = await this.parkingRecordRepository.findOne({ where: { id: id } });
-
-    if (!parkingRecord) {
-      throw new NotFoundException('Registro de entrada não encontrado!');
-    }
-
-    parkingRecord.exitTime = new Date();
     await this.parkingRecordRepository.save(parkingRecord);
 
-    const establishment = await this.establishmentRepository.findOne({ where: { id: parkingRecord.establishment.id } });
-
-    if (parkingRecord.vehicle.type === 'Car') {
-      establishment.occupiedCarSpaces -= 1;
-    } else if (parkingRecord.vehicle.type === 'Motorcycle') {
-      establishment.occupiedMotorcycleSpaces -= 1;
-    }
-
-    await this.establishmentRepository.save(establishment);
-
-    return parkingRecord;
+    return <ResultsDto>{
+      status: true,
+      message: 'Entrada registrada com sucesso!',
+      data: parkingRecord,
+    };
   }
+
+
+  async calculateEntryExitSummary(establishmentId: string): Promise<{ totalEntries: number; totalExits: number }> {
+    const totalEntries = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, exitTime: null },
+    });
+
+    const totalExits = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, exitTime: Not(IsNull()) },
+    });
+
+    return { totalEntries, totalExits };
+  }
+
+  async calculateEntryExitSummaryPerHour(establishmentId: string): Promise<any> {
+    const totalEntries = await this.parkingRecordRepository
+      .createQueryBuilder('parkingRecord')
+      .select('DATE_FORMAT(parkingRecord.entryTime, "%Y-%m-%d %H:00:00") as hour')
+      .addSelect('COUNT(parkingRecord.id)', 'totalEntries')
+      .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
+      .andWhere('parkingRecord.exitTime IS NULL')
+      .groupBy('hour')
+      .getRawMany();
+
+    const totalExits = await this.parkingRecordRepository
+      .createQueryBuilder('parkingRecord')
+      .select('DATE_FORMAT(parkingRecord.exitTime, "%Y-%m-%d %H:00:00") as hour')
+      .addSelect('COUNT(parkingRecord.id)', 'totalExits')
+      .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
+      .andWhere('parkingRecord.exitTime IS NOT NULL')
+      .groupBy('hour')
+      .getRawMany();
+
+    return { totalEntries, totalExits };
+  }
+
+
+  // async calculateEntryExitSummary(establishmentId: string): Promise<{ totalEntries: number; totalExits: number }> {
+  //   const result = await this.parkingRecordRepository
+  //     .createQueryBuilder('parkingRecord')
+  //     .select('SUM(CASE WHEN parkingRecord.exitTime IS NULL THEN 1 ELSE 0 END)', 'totalEntries')
+  //     .addSelect('SUM(CASE WHEN parkingRecord.exitTime IS NOT NULL THEN 1 ELSE 0 END)', 'totalExits')
+  //     .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
+  //     .getRawOne();
+
+  //   const totalEntries = parseInt(result.totalEntries, 10) || 0;
+  //   const totalExits = parseInt(result.totalExits, 10) || 0;
+
+  //   return { totalEntries, totalExits };
+  // }
+
+  async calculateEntryExitSummaryByPeriod(establishmentId: string, startDate: Date, endDate: Date): Promise<{ totalEntries: number; totalExits: number }> {
+    const result = await this.parkingRecordRepository
+      .createQueryBuilder('parkingRecord')
+      .select('SUM(CASE WHEN parkingRecord.exitTime IS NULL THEN 1 ELSE 0 END)', 'totalEntries')
+      .addSelect('SUM(CASE WHEN parkingRecord.exitTime IS NOT NULL THEN 1 ELSE 0 END)', 'totalExits')
+      .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
+      .andWhere('parkingRecord.entryTime BETWEEN :startDate AND :endDate', { startDate, endDate })
+      .getRawOne();
+
+    const totalEntries = parseInt(result.totalEntries, 10) || 0;
+    const totalExits = parseInt(result.totalExits, 10) || 0;
+
+    return { totalEntries, totalExits };
+  }
+
 }

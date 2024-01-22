@@ -32,4 +32,14 @@ export class CreateEstablishmentDto {
         example: '10',
     })
     carSpaces: number;
+    @ApiProperty({
+        description: 'The number of occupied car spaces of the establishment',
+        example: '10',
+    })
+    occupiedCarSpaces: number;
+    @ApiProperty({
+        description: 'The number of occupied motorcycle spaces of the establishment',
+        example: '10',
+    })
+    occupiedMotorcycleSpaces: number;
 }
