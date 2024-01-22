@@ -9,13 +9,17 @@ export const OPEN_API_ROOT = 'api/v1/docs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const config = new DocumentBuilder()
     .setTitle('Parking API')
     .setDescription('Api RESTful para controle de estacionamento')
     .setVersion('1.0')
+    .addTag('Auth')
     .addTag('Users')
     .addTag('Establishment')
     .addTag('Vehicles')
+    .addTag('Parking Record')
+    .addBearerAuth()
     .build();
   const globalPrefix = 'api/v1';
   app.setGlobalPrefix(globalPrefix);

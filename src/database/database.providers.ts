@@ -10,10 +10,12 @@ export const databaseProviders = [
         port: 3306,
         username: 'root',
         password: 'password',
-        database: 'nest',
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        database: 'kelll',
+        entities: [process.cwd() + '/src/**/*.entity{.ts,.js}'],
+        // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         synchronize: true,
       })
+
 
       return dataSource.initialize()
     },

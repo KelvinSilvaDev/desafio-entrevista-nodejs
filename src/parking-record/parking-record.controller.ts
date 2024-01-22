@@ -1,19 +1,31 @@
-import { Controller, Post, Body, Put, Param } from "@nestjs/common";
+import { Controller, Post, Body, Put, Param, Get } from "@nestjs/common";
 import { CreateParkingRecordDto } from "./dto/create-parking-record.dto";
 import { ParkingRecordService } from "./parking-record.service";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Connection } from "typeorm";
 
+@ApiBearerAuth()
+@ApiTags('Parking Record')
 @Controller('parking-records')
 export class ParkingRecordController {
-  constructor(private readonly parkingRecordService: ParkingRecordService) { }
+  constructor(
+    private readonly parkingRecordService: ParkingRecordService,
+    private readonly connection: Connection
+  ) { }
+
+  @Get()
+  findAll() {
+    return this.parkingRecordService.findAll();
+  }
 
   @Post()
-  create(@Body() createParkingRecordDto: CreateParkingRecordDto) {
-    return this.parkingRecordService.create(createParkingRecordDto.vehicle, createParkingRecordDto.establishment);
+  async create(@Body() createParkingRecordDto: CreateParkingRecordDto) {
+    return await this.parkingRecordService.create(createParkingRecordDto.vehicle, createParkingRecordDto.establishment);
   }
 
   @Put(':id')
   update(@Param('id') id: string) {
-    return this.parkingRecordService.update(Number(id));
+    return this.parkingRecordService.update((id));
   }
 }
 

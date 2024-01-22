@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity()
+@Entity('establishment')
 export class Establishment {
     /**
      * Identificador único do estabelecimento
@@ -62,4 +62,16 @@ export class Establishment {
      */
     @UpdateDateColumn()
     updatedAt: Date;
+
+    /**
+     * Número de vagas para motocicletas ocupadas
+     */
+    @Column({ default: 0 })
+    occupiedCarSpaces: number;
+
+    /**
+     * Número de vagas para carros ocupadas
+     */
+    @Column({ default: 0 })
+    occupiedMotorcycleSpaces: number;
 }

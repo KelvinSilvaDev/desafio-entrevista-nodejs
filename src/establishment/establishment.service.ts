@@ -4,12 +4,18 @@ import { UpdateEstablishmentDto } from './dto/update-establishment.dto';
 import { Establishment } from './entities/establishment.entity';
 import { Repository, EntityNotFoundError } from 'typeorm';
 import { ResultsDto } from 'src/dto/results.dto';
+import { Vehicle } from 'src/vehicles/entities/vehicle.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class EstablishmentService {
+  /**
+   * Constructor
+   * @param {Repository<Establishment>} establishmentRepository
+   */
   constructor(
-    @Inject('ESTABLISHMENT_REPOSITORY')
-    private establishmentRepository: Repository<Establishment>,
+    @InjectRepository(Establishment)
+    private readonly establishmentRepository: Repository<Establishment>,
   ) { }
 
   async create(createEstablishmentDto: CreateEstablishmentDto): Promise<ResultsDto> {
@@ -143,4 +149,24 @@ export class EstablishmentService {
       };
     }
   }
+
+  async incrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
+    if (vehicle.type === 'car') {
+      establishment.occupiedCarSpaces++;
+    } else {
+      establishment.occupiedMotorcycleSpaces++;
+    }
+    return this.establishmentRepository.save(establishment);
+  }
+
+  async decrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
+    if (vehicle.type === 'car') {
+      establishment.occupiedCarSpaces--;
+    } else {
+      establishment.occupiedMotorcycleSpaces--;
+    }
+    return this.establishmentRepository.save(establishment);
+  }
+
+
 }

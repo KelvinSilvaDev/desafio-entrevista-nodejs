@@ -1,36 +1,91 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
-import { UsersService } from './users.service'
-import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { ApiTags } from '@nestjs/swagger'
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+
+
+import { CheckPolicies } from '../casl/check-policies.decorator';
+import { PoliciesGuard } from '../casl/policies.guard';
+import { DeleteUserPolicyHandler } from '../casl/policy-handlers';
+import { PatchUserDto } from './dto/patch-user.dto';
+import { UsersService } from './users.service';
+import { MessageDto } from 'src/dto/message.dto';
+import { User } from './user.entity';
+
+/**
+ * Users Controller
+ */
+@ApiBearerAuth()
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  /**
+   * Constructor
+   * @param usersService
+   */
+  constructor(private readonly usersService: UsersService) { }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto)
-  }
-
+  /**
+   * Retrieves current authenticated user
+   * @returns {Promise<User>} queried user data
+   */
   @Get()
-  findAll() {
-    return this.usersService.findAll()
+  getUser(@Request() req) {
+    return req.user;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id)
+  /**
+   * Retrieves a particular user
+   * @param username the user given username to fetch
+   * @returns {Promise<User>} queried user data
+   */
+  @Get(':username')
+  @ApiResponse({ status: 200, description: 'Fetch User Request Received' })
+  @ApiResponse({ status: 400, description: 'Fetch User Request Failed' })
+  async getUserByUsername(@Param('username') username: string): Promise<User> {
+    const user = await this.usersService.getByUsername(username);
+    if (!user) {
+      throw new BadRequestException(
+        'The user with that username could not be found.',
+      );
+    }
+    return user;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto)
+  /**
+   * Edit a user
+   * @param {RegisterPayload} payload
+   * @returns {Promise<User>} mutated user data
+   */
+  @Patch()
+  @ApiResponse({ status: 200, description: 'Patch User Request Received' })
+  @ApiResponse({ status: 400, description: 'Patch User Request Failed' })
+  async patchUser(@Body() payload: PatchUserDto): Promise<User> {
+    return this.usersService.edit(payload);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id)
+  /**
+   * Removes a user from the database
+   * @param {string} username the username to remove
+   * @returns {Promise<IGenericMessageBody>} whether or not the user has been deleted
+   */
+  @Delete(':username')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new DeleteUserPolicyHandler())
+  @ApiResponse({ status: 200, description: 'Delete User Request Received' })
+  @ApiResponse({ status: 400, description: 'Delete User Request Failed' })
+  async deleteUserByUsername(
+    @Param('username') username: string,
+  ): Promise<MessageDto> {
+    return this.usersService.delete(username);
   }
 }

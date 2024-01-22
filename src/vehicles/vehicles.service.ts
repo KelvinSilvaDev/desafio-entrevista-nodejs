@@ -4,12 +4,17 @@ import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity';
 import { ResultsDto } from 'src/dto/results.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class VehiclesService {
+  /**
+   * Constructor
+   * @param {Repository<Vehicle>} vehiclesRepository
+   */
   constructor(
-    @Inject('VEHICLE_REPOSITORY')
-    private vehiclesRepository: Repository<Vehicle>,
+    @InjectRepository(Vehicle)
+    private readonly vehiclesRepository: Repository<Vehicle>,
   ) { }
   async create(createVehicleDto: CreateVehicleDto): Promise<ResultsDto> {
     const { brand, model, color, licensePlate, type, cnh } = createVehicleDto;

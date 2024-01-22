@@ -1,13 +1,29 @@
-import { Module } from '@nestjs/common'
-import { UsersService } from './users.service'
-import { UsersController } from './users.controller'
+import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { usersProviders } from './users.providers'
-import { DatabaseModule } from '../database/database.module'
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+import { UserRoles } from './user-role.entity';
+import { User } from './user.entity';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { userProviders } from './users.provider';
+import { DataSource } from 'typeorm';
+import { PoliciesGuard } from 'src/casl/policies.guard';
+import { CaslFactory } from 'src/casl/casl.factory';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [TypeOrmModule.forFeature([User, UserRoles])],
+  providers: [
+    UsersService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    PoliciesGuard,
+    CaslFactory,
+  ],
   controllers: [UsersController],
-  providers: [...usersProviders, UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

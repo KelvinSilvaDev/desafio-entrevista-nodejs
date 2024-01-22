@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
-@Entity('vehicle')
+@Entity('Vehicle')
 export class Vehicle {
     /**
      * Identificador único do veículo

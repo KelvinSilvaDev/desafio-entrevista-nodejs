@@ -2,7 +2,7 @@ import { Establishment } from "src/establishment/entities/establishment.entity";
 import { Vehicle } from "src/vehicles/entities/vehicle.entity";
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from "typeorm";
 
-@Entity()
+@Entity('parking_record')
 export class ParkingRecord {
     @PrimaryGeneratedColumn()
     id: number;
