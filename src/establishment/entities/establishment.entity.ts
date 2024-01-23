@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { ParkingRecord } from 'src/parking-record/entities/parking-record.entity';
+import { Report } from 'src/report/entities/report.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 @Entity('establishment')
 export class Establishment {
@@ -74,4 +76,22 @@ export class Establishment {
      */
     @Column({ default: 0 })
     occupiedMotorcycleSpaces: number;
+
+    /**
+     * Relação com Report
+     * @see Report
+     * @see src/report/entities/report.entity.ts
+     * @example Report[]
+     */
+    @OneToMany(() => Report, report => report.establishment)
+    reports: Report[];
+
+    /**
+     * Relação com ParkingRecord
+     * @see ParkingRecord
+     * @see src/parking-record/entities/parking-record.entity.ts
+     * @example ParkingRecord[]
+     */
+    @OneToMany(() => ParkingRecord, parkingRecord => parkingRecord.establishment)
+    parkingRecords: ParkingRecord[];
 }

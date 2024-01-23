@@ -168,5 +168,47 @@ export class EstablishmentService {
     return this.establishmentRepository.save(establishment);
   }
 
+  async getGeneralInfo() {
+    const establishments = await this.establishmentRepository.find();
+    let totalCarSpaces = 0;
+    let totalMotorcycleSpaces = 0;
+    let totalOccupiedCarSpaces = 0;
+    let totalOccupiedMotorcycleSpaces = 0;
+
+    establishments.forEach((establishment) => {
+      totalCarSpaces += establishment.carSpaces;
+      totalMotorcycleSpaces += establishment.motorcycleSpaces;
+      totalOccupiedCarSpaces += establishment.occupiedCarSpaces;
+      totalOccupiedMotorcycleSpaces += establishment.occupiedMotorcycleSpaces;
+    });
+
+    return {
+      totalCarSpaces,
+      totalMotorcycleSpaces,
+      totalOccupiedCarSpaces,
+      totalOccupiedMotorcycleSpaces,
+    };
+  }
+
+  async getInfo() {
+    const establishments = await this.establishmentRepository.find();
+    const establishmentsInfo = [];
+
+    establishments.forEach((establishment) => {
+      establishmentsInfo.push({
+        name: establishment.name,
+        cnpj: establishment.cnpj,
+        address: establishment.address,
+        phone: establishment.phone,
+        carSpaces: establishment.carSpaces,
+        motorcycleSpaces: establishment.motorcycleSpaces,
+        occupiedCarSpaces: establishment.occupiedCarSpaces,
+        occupiedMotorcycleSpaces: establishment.occupiedMotorcycleSpaces,
+      });
+    });
+
+    return establishmentsInfo;
+  }
+
 
 }

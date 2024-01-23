@@ -13,9 +13,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { PoliciesGuard } from 'src/casl/policies.guard'
 import { CaslFactory } from 'src/casl/casl.factory'
 import { UserRoles } from 'src/users/user-role.entity'
+import { Report } from 'src/report/entities/report.entity'
 
 @Module({
-  imports: [ConfigModule, PassportModule.register({ defaultStrategy: 'jwt' }), TypeOrmModule.forFeature([Establishment, UserRoles])],
+  imports: [ConfigModule, PassportModule.register({ defaultStrategy: 'jwt' }), TypeOrmModule.forFeature([Establishment, UserRoles, Report])],
   providers: [
     EstablishmentService,
     {

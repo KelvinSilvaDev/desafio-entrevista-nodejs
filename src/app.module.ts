@@ -27,6 +27,7 @@ import { join } from 'path';
 // import { JwtStrategy } from './teste/jwt.strategy';
 // import { AuthModule } from './teste/auth.module';
 import { SummaryModule } from './summary/summary.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -122,6 +123,7 @@ import { SummaryModule } from './summary/summary.module';
     VehiclesModule,
     ParkingRecordModule,
     SummaryModule,
+    ReportModule,
   ]
   ,
   controllers: [AppController],
