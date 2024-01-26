@@ -1,0 +1,19 @@
+runtime: custom
+env: flex
+
+manual_scaling:
+  instances: 1
+
+resources:
+  cpu: 2
+  memory_gb: 4
+  disk_size_gb: 10
+
+env_variables:
+  WEBTOKEN_ENCRYPTION_KEY: uAsBw6WxqD
+  NODE_ENV: production
+  DB_HOST: "34.151.222.168"
+  DB_USER: root
+  DB_PASSWORD: Qk<~6IBHY+f<'+xU
+  # DB_DATABASE: "drconsulta-parking-api-412201:southamerica-east1:dronsulta-db"
+  DB_DATABASE: nest

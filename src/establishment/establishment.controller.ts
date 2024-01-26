@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { EstablishmentService } from './establishment.service';
 import { CreateEstablishmentDto } from './dto/create-establishment.dto';
@@ -40,7 +41,7 @@ export class EstablishmentController {
     return this.establishmentService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(AuthGuard('jwt'))
   update(
     @Param('id') id: string,

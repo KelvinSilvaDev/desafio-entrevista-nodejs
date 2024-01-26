@@ -1,0 +1,31 @@
+version: '3'
+services:
+  api_prod:
+    build: .
+    container_name: nest-rest-typeorm-api
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/dist
+      - /usr/src/app/node_modules
+    environment:
+      APP_ENV: production
+      WEBTOKEN_ENCRYPTION_KEY: uAsBw6WxqD
+      WEBTOKEN_EXPIRATION_TIME: 2400
+      DB_TYPE: mysql
+      DB_USERNAME: root
+      DB_PASSWORD: Qk<~6IBHY+f<'+xU
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: nestjs_parking_lot
+  db_prod:
+    image: mysql:5-oracle
+    environment:
+      MYSQL_DATABASE: root
+      MYSQL_ROOT_PASSWORD: Qk<~6IBHY+f<'+xU
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadbdata:/var/lib/mysql
+
+volumes:
+  mariadbdata:

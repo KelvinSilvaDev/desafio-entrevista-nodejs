@@ -34,7 +34,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {
-    this.expiration = this.configService.get('WEBTOKEN_EXPIRATION_TIME');
+    // this.expiration = this.configService.get('WEBTOKEN_EXPIRATION_TIME');
+    this.expiration = this.configService.get('99');
   }
 
   /**
@@ -52,7 +53,7 @@ export class AuthService {
     return {
       expiration: this.expiration,
       expirationFormatted: moment()
-        .add(this.expiration, 'seconds')
+        .add(this.expiration, 'minutes')
         .format('LLL'),
       token: this.jwtService.sign({
         id,
