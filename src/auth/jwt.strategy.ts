@@ -23,8 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'secret',
-      // secretOrKey: configService.get('WEBTOKEN_ENCRYPTION_KEY'),
+      // secretOrKey: 'eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSJ9.nLQi-i-p8XX72uNiDTwXjg_NCyMy8fRuY8sQG7npR9Q',
+      secretOrKey: configService.get('WEBTOKEN_ENCRYPTION_KEY'),
     });
   }
 

@@ -20,10 +20,10 @@ const entities = [Establishment, ParkingRecord, Report, Summary, Vehicle, User, 
 
 export const dataSource = new DataSource({
   type: 'mysql',
-  host: "34.151.222.168",
+  host: "localhost",
   port: 3306,
   username: "root",
-  password: "Qk<~6IBHY+f<'+xU",
+  password: "password",
   database: "nest",
   entities: entities,
   // migrations: [path.resolve(__dirname, 'dist/database/migrations/*.js')],

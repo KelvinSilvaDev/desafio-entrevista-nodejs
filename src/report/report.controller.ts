@@ -42,7 +42,7 @@ export class ReportController {
 
   @Get('/estabelecimento/:id')
   @Public()
-  async obterRelatorioEstabelecimento(@Param('id') id: string, @Body() createReportDto: CreateReportDto) {
+  async obterRelatorioEstabelecimento(@Param('id') id: string) {
     return await this.reportService.getReportByEstablishment(id);
   }
 }

@@ -23,8 +23,12 @@ export class SummaryService {
   }
 
   async calculateSummaryByPeriod(establishmentId: string, startDate: Date, endDate: Date): Promise<any> {
-    const entryExitSummary = await this.parkingRecordService.calculateEntryExitSummaryPerHour(establishmentId);
+
+    const entryExitSummary = await this.parkingRecordService.calculateEntryExitSummaryByPeriod(establishmentId, startDate, endDate);
     return entryExitSummary;
+
+    // const entryExitSummary = await this.parkingRecordService.calculateEntryExitSummaryPerHour(establishmentId);
+    // return entryExitSummary;
   }
 
 }

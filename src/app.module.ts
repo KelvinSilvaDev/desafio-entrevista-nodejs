@@ -23,9 +23,6 @@ import { CaslModule } from './casl/casl.module';
 import * as winston from 'winston';
 import * as winstonFileRotator from 'winston-daily-rotate-file';
 import { join } from 'path';
-
-// import { JwtStrategy } from './teste/jwt.strategy';
-// import { AuthModule } from './teste/auth.module';
 import { SummaryModule } from './summary/summary.module';
 import { ReportModule } from './report/report.module';
 import { DataSource } from 'typeorm';
@@ -35,27 +32,35 @@ import { Vehicle } from './vehicles/entities/vehicle.entity';
 import { Report } from './report/entities/report.entity';
 import { ParkingRecord } from './parking-record/entities/parking-record.entity';
 import { Summary } from './summary/entities/summary.entity';
-// import ormconfig from './ormconfig';
 
 
 const entities = [User, Establishment, Vehicle, Report, ParkingRecord,Summary];
 
-// export function DatabaseOrmModule(): DynamicModule {
-//   // we could load the configuration from dotEnv here,
-//   // but typeORM cli would not be able to find the configuration file.
-
-//   return TypeOrmModule.forRoot(ormconfig);
-// }
-
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      validationSchema: joi.object({
+        APP_ENV: joi
+          .string()
+          .valid('development', 'production')
+          .default('development'),
+        WEBTOKEN_ENCRYPTION_KEY: joi.string().required(),
+        WEBTOKEN_EXPIRATION_TIME: joi.number().default(3600),
+        DB_TYPE: joi.string().default('mysql'),
+        DB_USERNAME: joi.string().default('root'),
+        DB_PASSWORD: joi.string().allow('').default('password'),
+        DB_HOST: joi.string().default('localhost'),
+        DB_PORT: joi.number().default('3306'),
+        DB_DATABASE: joi.string().default('nest'),
+      }),
+    }),
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'password',
-      database: 'nest',
+      type: process.env.DB_TYPE as any,
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       entities: entities,
       synchronize: false,
       autoLoadEntities: true,

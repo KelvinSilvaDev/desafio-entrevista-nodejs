@@ -88,7 +88,7 @@ export class ParkingRecordService {
   }
 
 
-  async calculateEntryExitSummary(establishmentId: string): Promise<{ totalEntries: number; totalExits: number }> {
+  async calculateEntryExitSummary(establishmentId: string): Promise<{ totalEntries: number; totalExits: number, totalMotorcycles: number, totalCars: number, totalCarEntries: number, totalCarExits: number, totalMotorcycleEntries: number, totalMotorcycleExits: number }> {
     const totalEntries = await this.parkingRecordRepository.count({
       where: { establishment: { id: establishmentId }, exitTime: null },
     });
@@ -97,7 +97,31 @@ export class ParkingRecordService {
       where: { establishment: { id: establishmentId }, exitTime: Not(IsNull()) },
     });
 
-    return { totalEntries, totalExits };
+    const totalMotorcycles = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Motorcycle' } },
+    });
+
+    const totalCars = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' } },
+    });
+
+    const totalCarEntries = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' }, exitTime: null },
+    });
+
+    const totalCarExits = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' }, exitTime: Not(IsNull()) },
+    });
+
+    const totalMotorcycleEntries = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Motorcycle' }, exitTime: null },
+    });
+
+    const totalMotorcycleExits = await this.parkingRecordRepository.count({
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Motorcycle' }, exitTime: Not(IsNull()) },
+    });
+
+    return { totalEntries, totalExits, totalMotorcycles, totalCars, totalCarEntries, totalCarExits, totalMotorcycleEntries, totalMotorcycleExits };
   }
 
   async calculateEntryExitSummaryPerHour(establishmentId: string): Promise<any> {
@@ -137,19 +161,31 @@ export class ParkingRecordService {
   //   return { totalEntries, totalExits };
   // }
 
-  async calculateEntryExitSummaryByPeriod(establishmentId: string, startDate: Date, endDate: Date): Promise<{ totalEntries: number; totalExits: number }> {
-    const result = await this.parkingRecordRepository
-      .createQueryBuilder('parkingRecord')
-      .select('SUM(CASE WHEN parkingRecord.exitTime IS NULL THEN 1 ELSE 0 END)', 'totalEntries')
-      .addSelect('SUM(CASE WHEN parkingRecord.exitTime IS NOT NULL THEN 1 ELSE 0 END)', 'totalExits')
-      .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
-      .andWhere('parkingRecord.entryTime BETWEEN :startDate AND :endDate', { startDate, endDate })
-      .getRawOne();
+  async calculateEntryExitSummaryByPeriod(establishmentId: string, startDate: Date, endDate: Date): Promise<{ result: any, totalEntries: any; totalExits: any }> {
+    // const result = await this.parkingRecordRepository
+    //   .createQueryBuilder('parkingRecord')
+    //   .select('SUM(CASE WHEN parkingRecord.exitTime IS NULL THEN 1 ELSE 0 END)', 'totalEntries')
+    //   .addSelect('SUM(CASE WHEN parkingRecord.exitTime IS NOT NULL THEN 1 ELSE 0 END)', 'totalExits')
+    //   .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
+    //   .andWhere('parkingRecord.entryTime BETWEEN :startDate AND :endDate', { startDate, endDate })
+    //   .getRawOne();
 
-    const totalEntries = parseInt(result.totalEntries, 10) || 0;
-    const totalExits = parseInt(result.totalExits, 10) || 0;
+    // const totalEntries = result.totalEntries ;
+    // const totalExits = result.totalExits;
 
-    return { totalEntries, totalExits };
+    const result = await this.parkingRecordRepository.find({
+      where: { establishment: { id: establishmentId }, entryTime: Not(IsNull()), exitTime: Not(IsNull()) },
+    })
+
+    const totalEntries = result.filter((item) => {
+      return item.entryTime >= startDate && item.entryTime <= endDate
+    }).length;
+
+    const totalExits = result.filter((item) => {
+      return item.exitTime >= startDate && item.exitTime <= endDate
+    }).length;
+
+    return { result, totalEntries, totalExits };
   }
 
 }

@@ -37,6 +37,6 @@ async function bootstrap() {
   const ip = '0.0.0.0';
   await app.listen(8080);
   console.log(`Application is running on: ${await app.getUrl()}`);
-  console.log(__dirname)
+  console.log(process.env.APP_ENV)
 }
 bootstrap();
