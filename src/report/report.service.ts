@@ -125,23 +125,26 @@ export class ReportService {
     if (parkingRecords) {
       const newReport = new Report();
       newReport.totalCarEntries = parkingRecords.filter(
-        record => (!record.vehicle || record.vehicle.type.toLowerCase() === 'car') && record.entryTime
-      ).length;
+        record => (!record.vehicle || record.vehicle.type === 'Car') && record.entryTime
+      );
 
 
 
       newReport.totalMotorcycleEntries = parkingRecords.filter(
-        record => record.vehicle?.type.toLowerCase() === 'Motorcycle' && record.entryTime
-      ).length;
+        record => record.vehicle?.type === 'Motorcycle' && record.entryTime
+      );
 
-      console.log(newReport);
-      console.log(newReport);
+      if (newReport.totalCarEntries.length < 1) {
+        newReport.totalCarEntries = 0;
+      }
 
-      // Adicione outras métricas conforme necessário
+      if(newReport.totalMotorcycleEntries.length < 1) {
+        newReport.totalMotorcycleEntries = 0;
+      }
+      
 
       return newReport;
     } else {
-      // Se parkingRecords for undefined, você pode decidir o que fazer aqui,
       // por exemplo, retornar um relatório vazio ou lançar um erro.
       console.error("Registros de estacionamento não encontrados.");
       return new Report(); // Retorna um relatório vazio neste exemplo

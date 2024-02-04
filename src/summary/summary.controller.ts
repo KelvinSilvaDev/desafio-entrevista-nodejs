@@ -1,19 +1,14 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SummaryService } from './summary.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { PoliciesGuard } from 'src/casl/policies.guard';
 import { Public } from 'src/auth/public.decorator';
 import { CreateSummaryPerPeriodDto } from './dto/create-summary-per-period';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('summary')
+@ApiTags('Summary')
 export class SummaryController {
   constructor(private readonly summaryService: SummaryService) { }
-
-  // @Get()
-  // @Public()
-  // getSummary() {
-  //   return this.summaryService.calculateSummary();
-  // }
 
   @Get(':establishmentId')
   @Public()

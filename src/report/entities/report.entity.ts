@@ -7,46 +7,46 @@ export class Report {
     id: number;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarSpaces?: number;
+    totalCarSpaces?: number | Array<{}>;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleSpaces?: number;
+    totalMotorcycleSpaces?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarEntries?: number;
+    totalCarEntries?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleEntries?: number;
+    totalMotorcycleEntries?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarExits?: number;
+    totalCarExits?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleExits?: number;
+    totalMotorcycleExits?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarEntriesPerHour?: number;
+    totalCarEntriesPerHour?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleEntriesPerHour?: number;
+    totalMotorcycleEntriesPerHour?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarExitsPerHour?: number;
+    totalCarExitsPerHour?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleExitsPerHour?: number;
+    totalMotorcycleExitsPerHour?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarEntriesPerDay?: number;
+    totalCarEntriesPerDay?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleEntriesPerDay?: number;
+    totalMotorcycleEntriesPerDay?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalCarExitsPerDay?: number;
+    totalCarExitsPerDay?:  number | Array<{}> ;
 
     @Column({ type: 'integer', nullable: true })
-    totalMotorcycleExitsPerDay?: number;
+    totalMotorcycleExitsPerDay?:  number | Array<{}> ;
     @ManyToOne(() => Establishment, establishment => establishment.reports)
     establishment: Establishment;
 

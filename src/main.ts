@@ -19,6 +19,8 @@ async function bootstrap() {
     .addTag('Establishment')
     .addTag('Vehicles')
     .addTag('Parking Record')
+    .addTag('Report')
+    .addTag('Summary')
     .addBearerAuth()
     .build();
 
@@ -29,14 +31,11 @@ async function bootstrap() {
   SwaggerModule.setup(OPEN_API_ROOT, app, document);
   app.enableCors({
     allowedHeaders: ['content-type', 'Authorization'],
-    // origin: 'http://localhost:5173',
     origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
   });
-  const ip = '0.0.0.0';
   await app.listen(8080);
   console.log(`Application is running on: ${await app.getUrl()}`);
-  console.log(process.env.APP_ENV)
 }
 bootstrap();

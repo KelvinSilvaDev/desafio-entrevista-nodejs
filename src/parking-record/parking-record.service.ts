@@ -32,10 +32,29 @@ export class ParkingRecordService {
     return parkingRecords;
   }
 
+  async update(id: number) {
+    const parkingRecord = await this.parkingRecordRepository.findOne({ where: { id }, relations: ['vehicle', 'establishment']});
+    if (!parkingRecord) {
+      throw new NotFoundException('Registro de entrada não encontrado!');
+    }
+
+    parkingRecord.exitTime = new Date();
+    await this.parkingRecordRepository.save(parkingRecord);
+
+    const establishment = await this.establishmentRepository.findOne({ where: { id: parkingRecord.establishment.id } });
+
+    await this.decrementOccupiedSpaces(establishment, parkingRecord.vehicle);
+
+    return <ResultsDto>{
+      status: true,
+      message: 'Saída registrada com sucesso!',
+      data: parkingRecord,
+    };
+  }
 
   async incrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
 
-    if (vehicle.type === 'Car') {
+    if (vehicle.type === 'Car' || vehicle.type === 'car') {
       establishment.occupiedCarSpaces++;
     } else {
       establishment.occupiedMotorcycleSpaces++;
@@ -44,7 +63,7 @@ export class ParkingRecordService {
   }
 
   async decrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
-    if (vehicle.type === 'Car') {
+    if (vehicle.type === 'Car' || vehicle.type === 'car') {
       establishment.occupiedCarSpaces--;
     } else {
       establishment.occupiedMotorcycleSpaces--;
@@ -98,19 +117,19 @@ export class ParkingRecordService {
     });
 
     const totalMotorcycles = await this.parkingRecordRepository.count({
-      where: { establishment: { id: establishmentId }, vehicle: { type: 'Motorcycle' } },
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Motorcycle' || 'motorcycle' } },
     });
 
     const totalCars = await this.parkingRecordRepository.count({
-      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' } },
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' || 'car' } },
     });
 
     const totalCarEntries = await this.parkingRecordRepository.count({
-      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' }, exitTime: null },
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' || 'car' }, exitTime: null },
     });
 
     const totalCarExits = await this.parkingRecordRepository.count({
-      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' }, exitTime: Not(IsNull()) },
+      where: { establishment: { id: establishmentId }, vehicle: { type: 'Car' || 'car' }, exitTime: Not(IsNull()) },
     });
 
     const totalMotorcycleEntries = await this.parkingRecordRepository.count({

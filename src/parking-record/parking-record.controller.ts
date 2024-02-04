@@ -23,10 +23,10 @@ export class ParkingRecordController {
     return await this.parkingRecordService.create(createParkingRecordDto.vehicle, createParkingRecordDto.establishment);
   }
 
-  // @Put(':id')
-  // update(@Param('id') id: string) {
-  //   return this.parkingRecordService.update((id));
-  // }
+  @Put(':id')
+  update(@Param('id') id: number) {
+    return this.parkingRecordService.update((id));
+  }
 }
 
 
