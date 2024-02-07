@@ -48,8 +48,7 @@ describe('AuthController', () => {
           const mockMetadata = moduleMocker.getMetadata(
             token
           ) as unknown as MockFunctionMetadata<unknown, unknown[]>;
-          // const Mock = moduleMocker.generateFromMetadata(mockMetadata);
-          // return new Mock();
+         
         }
       })
       .compile();

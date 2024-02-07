@@ -12,8 +12,6 @@ type PolicyHandlerCallback = (ability: AppAbility) => boolean;
 
 export type PolicyHandler = IPolicyHandler | PolicyHandlerCallback;
 
-// Policy Handlers
-
 export class DeleteUserPolicyHandler implements IPolicyHandler {
   handle(ability: AppAbility) {
     return ability.can(UserActionsEnum

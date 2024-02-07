@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Establishment } from 'src/establishment/entities/establishment.entity';
 import { Repository } from 'typeorm';
 import { Summary } from './entities/summary.entity';
 import { ParkingRecordService } from 'src/parking-record/parking-record.service';
-import { start } from 'repl';
 
 @Injectable()
 export class SummaryService {
@@ -26,9 +24,6 @@ export class SummaryService {
 
     const entryExitSummary = await this.parkingRecordService.calculateEntryExitSummaryByPeriod(establishmentId, startDate, endDate);
     return entryExitSummary;
-
-    // const entryExitSummary = await this.parkingRecordService.calculateEntryExitSummaryPerHour(establishmentId);
-    // return entryExitSummary;
   }
 
 }

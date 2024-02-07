@@ -4,8 +4,8 @@ import { Establishment } from "src/establishment/entities/establishment.entity";
 import { Vehicle } from "src/vehicles/entities/vehicle.entity";
 
 import { ParkingRecord } from "./entities/parking-record.entity";
-import { Repository, Connection, getConnection, getRepository, getConnectionManager, IsNull, Not } from "typeorm";
-import { UpdateEstablishmentDto } from "src/establishment/dto/update-establishment.dto";
+import { Repository, Connection, IsNull, Not } from "typeorm";
+
 import { ResultsDto } from "src/dto/results.dto";
 
 
@@ -95,11 +95,6 @@ export class ParkingRecordService {
         throw new BadRequestException('Invalid vehicle type');
     }
 
-  
-
-
-    //Verificar se o veículo é carro ou moto para decrementar a quantidade de vagas ocupadas
-
     await this.incrementOccupiedSpaces(foundEstablishment, foundVehicle);
 
     
@@ -180,32 +175,8 @@ export class ParkingRecordService {
     return { totalEntries, totalExits };
   }
 
-
-  // async calculateEntryExitSummary(establishmentId: string): Promise<{ totalEntries: number; totalExits: number }> {
-  //   const result = await this.parkingRecordRepository
-  //     .createQueryBuilder('parkingRecord')
-  //     .select('SUM(CASE WHEN parkingRecord.exitTime IS NULL THEN 1 ELSE 0 END)', 'totalEntries')
-  //     .addSelect('SUM(CASE WHEN parkingRecord.exitTime IS NOT NULL THEN 1 ELSE 0 END)', 'totalExits')
-  //     .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
-  //     .getRawOne();
-
-  //   const totalEntries = parseInt(result.totalEntries, 10) || 0;
-  //   const totalExits = parseInt(result.totalExits, 10) || 0;
-
-  //   return { totalEntries, totalExits };
-  // }
-
   async calculateEntryExitSummaryByPeriod(establishmentId: string, startDate: Date, endDate: Date): Promise<{ result: any, totalEntries: any; totalExits: any }> {
-    // const result = await this.parkingRecordRepository
-    //   .createQueryBuilder('parkingRecord')
-    //   .select('SUM(CASE WHEN parkingRecord.exitTime IS NULL THEN 1 ELSE 0 END)', 'totalEntries')
-    //   .addSelect('SUM(CASE WHEN parkingRecord.exitTime IS NOT NULL THEN 1 ELSE 0 END)', 'totalExits')
-    //   .where('parkingRecord.establishment.id = :establishmentId', { establishmentId })
-    //   .andWhere('parkingRecord.entryTime BETWEEN :startDate AND :endDate', { startDate, endDate })
-    //   .getRawOne();
 
-    // const totalEntries = result.totalEntries ;
-    // const totalExits = result.totalExits;
 
     const result = await this.parkingRecordRepository.find({
       where: { establishment: { id: establishmentId }, entryTime: Not(IsNull()), exitTime: Not(IsNull()) },

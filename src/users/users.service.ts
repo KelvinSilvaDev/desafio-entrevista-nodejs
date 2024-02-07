@@ -102,20 +102,6 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  // return this.userRepository.save(
-  //   this.userRepository.create({
-  //     ...payload,
-  //     roles,
-  //     gravatar: url(payload.email, {
-  //       protocol: 'http',
-  //       s: '200',
-  //       r: 'pg',
-  //       d: '404',
-  //     }),
-  //   }),
-  // );
-  // }
-
   /**
    * Edit user data
    * @param {PatchUserDto} payload
