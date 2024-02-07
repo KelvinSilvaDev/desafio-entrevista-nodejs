@@ -72,6 +72,22 @@ DB_PORT=3306
 DB_DATABASE=nest
 ````
 
+#### Docker
+
+O projeto conta com uma configuração Docker para desenvolivmento e deploy
+
+Iniicar o container com o banco de dados mysql.
+
+```bash
+docker compose up -d
+```
+
+ou
+
+```bash
+docker-compose up -d
+```
+
 ### Configuração do Frontend
 
 -   Configuração de variáveis de ambiente, conforme o exemplo.
@@ -428,14 +444,90 @@ Essa ação também realiza um decremento na propriedade occupiedCarSpaces ou oc
 
 O frontend trata-se de uma dashboard que realiza a conexão com a api e obtém as informações sobre estabelecimentos cadastrados, veículos, registros de entrada e saída, sumários e relatórios todos filtrados por ID do estabelecimento.
 
-## Problemas Conhecidos
+# Problemas Conhecidos
 
-O projeto encontra-se inacabado na parte do frontend e conta somente com a tela de estabelecimentos. A idéia seria seguir a mesma estrutura para as demais páginas e refinar a lógica e experiência do usuário com cada elemento da página.
+O projeto conta com códigos funcionais que podem e devem ser melhorados ao longo do tempo, e necessita de refatorações em algumas funções que conectam  o Backend e o Frontend.
+
+A maioria dos endpoints oferece retornos como 
+
+```json
+{
+  "status": true,
+  "message": "Veículo cadastrado com sucesso!",
+  "data": {
+    "brand": "Toyota",
+    "model": "Corolla",
+    "color": "Azul",
+    "licensePlate": "ABC1774",
+    "type": "Car",
+    "cnh": "123456789",
+    "id": "21f25ffa-679e-40d8-80b3-c3efb4f4ba28",
+    "createdAt": "2024-02-07T08:45:06.284Z",
+    "updatedAt": "2024-02-07T08:45:06.284Z"
+  }
+}
+```
+E esse formato se mostrou um problema durante a experiência de desenvolvimento, um formato mais adequado seria um retorno como:
+
+```json
+{
+    "brand": "Toyota",
+    "model": "Corolla",
+    "color": "Azul",
+    "licensePlate": "ABC1774",
+    "type": "Car",
+    "cnh": "123456789",
+    "id": "21f25ffa-679e-40d8-80b3-c3efb4f4ba28",
+    "createdAt": "2024-02-07T08:45:06.284Z",
+    "updatedAt": "2024-02-07T08:45:06.284Z"
+}
+```
+
+O motivo disso é pelo fato de que o frontend utiliza uma abordagem com axios que por padrão armazena os reulstados de suas requests em um response.data.
+
+fazendo com que a função faça requests para obter o response.data.data, tornando a leitura do código muito verbosa e menos limpa.
+
+Exemplo:
+
+```javascript
+    const getVehicles = async () => {
+      try {
+        const response = await axiosPrivate.get("/vehicles");
+        const { data } = await response.data;
+        setVehicles(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+```
+
+Também poderia ser adotada uma abordagem diferente para as requests visando uma melhor performance da aplicação, utilizando menos os hooks useEffect e useState do React e utilizando outras alternativas que já se provaram mais eficientes no mercado.
+
+
+# Deploy
+
+O Frontend está hospedado na vercel e pode ser acessado clicando [aqui](https://dr-consulta-frontend-challenge-parking-api.vercel.app/).
+Caso o seu navegador não abra o link, você pode inserir o seguinte endereço na barra de endereços: https://dr-consulta-frontend-challenge-parking-api.vercel.app/
+
+Já o backend está hospedado no Google Cloud Platform e pode ser acessado clicando [aqui](https://drconsulta-parking-api-412201.rj.r.appspot.com/api/v1)
+
+A documentação está em https://drconsulta-parking-api-412201.rj.r.appspot.com/api/v1/docs.
+
+Para realizar os deploys de novas versões e atualizações é recomendada a abordagem via CLI do Google Cloud e é preciso realizar o build da imagem da aplicação antes do deploy.
+
+```bash
+
+docker build -t gcr.io/drconsulta-parking-api-412201/parking-api:latest .
+
+docker push gcr.io/drconsulta-parking-api-412201/parking-api:latest      
+
+gcloud app deploy
+```
 
 ## Contato
 
-📱Tel/Whatsapp: 11 9 5837-8212.
-✉️ E-mail: kelvinsilvadev@gmail.com
+📱Tel/Whatsapp: 11 9 5837-8212.\
+✉️ E-mail: kelvinsilvadev@gmail.com\
 🧳 Linkedin: https://www.linkedin.com/in/kelvin-oliveira-romao/
 
 ## Agradecimentos

@@ -14,12 +14,15 @@ export class ReportService {
    * Constructor
    * @param {Repository<Establishment>} establishmentRepository
    * @param {Repository<Report>} reportRepository
+   * @param {Repository<ParkingRecord>} parkingRecordRepository
    */
   constructor(
     @InjectRepository(Establishment)
     private readonly establishmentRepository: Repository<Establishment>,
     @InjectRepository(Report)
     private readonly reportRepository: Repository<Report>,
+    @InjectRepository(ParkingRecord)
+    private readonly parkingRecordRepository: Repository<ParkingRecord>,
   ) { }
 
   create(createReportDto: CreateReportDto) {
@@ -42,38 +45,10 @@ export class ReportService {
     return `This action removes a #${id} report`;
   }
 
-  // async getReportByEstablishment(id: string): Promise<ResultsDto> {
-  //   // const establishment = await this.establishmentRepository.findOne({ where: { id: id } });
-  //   try {
-  //     const result = await this.establishmentRepository.find({
-  //       where: { id: id },
-  //       // relations: ['parkingRecords'],
-  //     });
-  //     console.log(result);
-
-  //     const newReport: Report = new Report();
-
-
-  //     return <ResultsDto>{
-  //       status: true,
-  //       data: result,
-  //     };
-  //   } catch (error) {
-  //     console.error(error);
-  //     return <ResultsDto>{
-  //       status: false,
-  //       message: 'Não foi possível listar os estabelecimentos!',
-  //       error: error,
-  //     };
-  //   }
-  // }
-
   async getReportByEstablishment(id: string): Promise<ResultsDto> {
     try {
-      // Recupera o estabelecimento com base no ID
       const establishment = await this.establishmentRepository.findOne({
         where: { id: id },
-        relations: ['parkingRecords']
       });
 
       console.log('Estabelecimento encontrado através do ID fornecido', establishment);
@@ -85,28 +60,15 @@ export class ReportService {
         };
       }
 
-      // Recupera os registros de estacionamento relacionados ao estabelecimento
-      const parkingRecords = establishment.parkingRecords;
-
-      console.log('Registros de estacionamentos no estabelecimento em questão', parkingRecords);
-
-      // Realiza cálculos ou lógica para criar o relatório com base nos registros de estacionamento
+      const parkingRecords = await this.parkingRecordRepository.find({ where: { establishment: { id: id } }, relations: ['vehicle', 'establishment']});
+      
       const newReport = this.generateReport(parkingRecords);
-
-      console.log('E relatório pronto para ser registrado no banco de dados: ', newReport);
+   
 
       return <ResultsDto>{
         status: true,
         data: newReport,
       };
-
-      // Salva o relatório no banco de dados
-      // await this.saveReport(newReport);
-
-      // return <ResultsDto>{
-      //   status: true,
-      //   data: newReport,
-      // };
     } catch (error) {
       console.error(error);
       return <ResultsDto>{
@@ -117,37 +79,39 @@ export class ReportService {
     }
   }
 
-  // Método de exemplo para gerar um relatório com base nos registros de estacionamento
   private generateReport(parkingRecords: ParkingRecord[]): Report {
-    // Lógica para criar o relatório com base nos registros de estacionamento
-    // ...
-
     if (parkingRecords) {
       const newReport = new Report();
       newReport.totalCarEntries = parkingRecords.filter(
-        record => (!record.vehicle || record.vehicle.type === 'Car') && record.entryTime
+        record => record.vehicle.type === 'Car' && record.entryTime
       );
-
-
-
       newReport.totalMotorcycleEntries = parkingRecords.filter(
-        record => record.vehicle?.type === 'Motorcycle' && record.entryTime
+        record => record.vehicle.type !== 'Car' && record.entryTime
       );
+
+      newReport.totalCarExits = parkingRecords.filter(
+        record => record.vehicle.type === 'Car' && record.exitTime
+      );
+
+      newReport.totalMotorcycleExits = parkingRecords.filter(
+        record => record.vehicle.type !== 'Car' && record.exitTime
+      );
+      
+
 
       if (newReport.totalCarEntries.length < 1) {
-        newReport.totalCarEntries = 0;
+        newReport.totalCarEntries = [];
       }
 
-      if(newReport.totalMotorcycleEntries.length < 1) {
-        newReport.totalMotorcycleEntries = 0;
+      if (newReport.totalMotorcycleEntries.length < 1) {
+        newReport.totalMotorcycleEntries = [];
       }
-      
+
 
       return newReport;
     } else {
-      // por exemplo, retornar um relatório vazio ou lançar um erro.
       console.error("Registros de estacionamento não encontrados.");
-      return new Report(); // Retorna um relatório vazio neste exemplo
+      return new Report();
     }
 
 

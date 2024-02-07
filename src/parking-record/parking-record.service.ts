@@ -80,22 +80,37 @@ export class ParkingRecordService {
       throw new NotFoundException('Vehicle or establishment not found');
     }
 
-    if (foundVehicle.type === 'Car' && foundEstablishment.carSpaces <= foundEstablishment.occupiedCarSpaces) {
-      throw new BadRequestException('No available car spaces in the establishment');
-    } else if (foundVehicle.type === 'Motorcycle' && foundEstablishment.motorcycleSpaces <= foundEstablishment.occupiedMotorcycleSpaces) {
-      throw new BadRequestException('No available motorcycle spaces in the establishment');
-    } else {
-      await this.incrementOccupiedSpaces(foundEstablishment, foundVehicle);
+    switch (foundVehicle.type) {
+      case 'Car':
+        if (foundEstablishment.carSpaces <= foundEstablishment.occupiedCarSpaces) {
+          throw new BadRequestException('No available car spaces in the establishment');
+        }
+        break;
+      case 'Motorcycle':
+        if (foundEstablishment.motorcycleSpaces <= foundEstablishment.occupiedMotorcycleSpaces) {
+          throw new BadRequestException('No available motorcycle spaces in the establishment');
+        }
+        break;
+      default:
+        throw new BadRequestException('Invalid vehicle type');
     }
+
+  
+
+
+    //Verificar se o veículo é carro ou moto para decrementar a quantidade de vagas ocupadas
+
+    await this.incrementOccupiedSpaces(foundEstablishment, foundVehicle);
+
+    
 
 
 
 
     const parkingRecord = new ParkingRecord();
-    parkingRecord.vehicle = vehicle;
-    parkingRecord.establishment = establishment;
+    parkingRecord.vehicle = foundVehicle;
+    parkingRecord.establishment = foundEstablishment;
     parkingRecord.entryTime = new Date();
-
 
     await this.parkingRecordRepository.save(parkingRecord);
 

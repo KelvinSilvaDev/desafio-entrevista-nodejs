@@ -151,19 +151,23 @@ export class EstablishmentService {
   }
 
   async incrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
-    if (vehicle.type === 'car') {
+    if (vehicle.type === 'Car') {
       establishment.occupiedCarSpaces++;
-    } else {
+    } else if (vehicle.type === 'Motorcycle'){
       establishment.occupiedMotorcycleSpaces++;
+    } else {
+      throw new Error('Invalid vehicle type');
     }
     return this.establishmentRepository.save(establishment);
   }
 
   async decrementOccupiedSpaces(establishment: Establishment, vehicle: Vehicle) {
-    if (vehicle.type === 'car') {
+    if (vehicle.type === 'Car') {
       establishment.occupiedCarSpaces--;
-    } else {
+    } else if(vehicle.type === 'Motorcycle') {
       establishment.occupiedMotorcycleSpaces--;
+    } else {
+      throw new Error('Invalid vehicle type');
     }
     return this.establishmentRepository.save(establishment);
   }

@@ -49,7 +49,7 @@ const entities = [User, Establishment, Vehicle, Report, ParkingRecord,Summary];
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: entities,
-      synchronize: false,
+      synchronize: true,
       autoLoadEntities: true,
       migrations: [__dirname + '/**/**/migrations/**/*{.ts,.js}'],
     }),
